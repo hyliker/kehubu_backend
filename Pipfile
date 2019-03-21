@@ -4,9 +4,13 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 verify_ssl = true
 
 [dev-packages]
+pip = "*"
 
 [packages]
 django = "*"
+django-model-utils = "*"
+django-taggit = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"
