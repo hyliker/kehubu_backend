@@ -11,6 +11,8 @@ django = "*"
 django-model-utils = "*"
 django-taggit = "*"
 pillow = "*"
+djangorestframework = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.6"
