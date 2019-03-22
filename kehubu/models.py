@@ -11,9 +11,9 @@ class Profile(models.Model):
     GENDER = Choices(('m', 'male', _('male')), ('f', 'female', _('female')), ('u', 'unknown', _('unknown')))
     ID_TYPE = Choices(('IdentityCard', _('Identity Card')), ('Passport', _('Passport')))
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        unique=True, 
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        unique=True,
         related_name="kehubu_profile"
     )
     id_type = models.CharField(_('ID type'), choices=ID_TYPE, max_length=32, default=ID_TYPE.IdentityCard)
@@ -32,19 +32,19 @@ class Profile(models.Model):
 
 class Group(TimeStampedModel):
     creator = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
         related_name="creator_kehubu_group_set"
     )
     members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, 
-        through='Member', 
-        through_fields=('group', 'user'), 
+        settings.AUTH_USER_MODEL,
+        through='Member',
+        through_fields=('group', 'user'),
         related_name="member_kehubu_group_set"
     )
     name = models.CharField(_('name'), max_length=32)
     description = models.TextField(_('description'))
-    logo = models.ImageField(_('logo', upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/"), blank=True)
+    logo = models.ImageField(_('logo'), upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/", blank=True)
     weighting = models.PositiveSmallIntegerField(_('weighting'), default=0)
 
     class Meta:
@@ -85,9 +85,9 @@ class Member(TimeStampedModel):
         related_name="inviter_kehubu_member_set",
     )
     rank = models.ForeignKey(
-        'GroupMemberRank', 
+        'GroupMemberRank',
         on_delete=models.SET_NULL,
-        null=True, 
+        null=True,
         blank=True,
         related_name='members',
     )
@@ -103,7 +103,7 @@ class Member(TimeStampedModel):
 
 class MobileNumber(TimeStampedModel):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
+        settings.AUTH_USER_MODEL,
         related_name="kehubu_mobilenumber_set",
         on_delete=models.SET_NULL,
         null=True,
@@ -113,7 +113,7 @@ class MobileNumber(TimeStampedModel):
     is_verified = models.BooleanField(_('is verified'), default=False)
     verification_code = models.CharField(_('verification code'), max_length=16)
     verification_code_expired = models.DateTimeField(
-        _('verification code expired'), 
+        _('verification code expired'),
         null=True,
         blank=True,
     )
