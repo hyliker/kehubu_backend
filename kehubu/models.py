@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from model_utils.models import TimeStampedModel
 from model_utils import Choices
 from taggit.managers import TaggableManager
+from django.utils import timezone
 
 
 class Profile(models.Model):
@@ -63,7 +64,7 @@ class GroupMemberRank(TimeStampedModel):
         unique_together = ('group', 'name')
 
     def __str__(self):
-        return self.rank
+        return self.name
 
 
 class Member(TimeStampedModel):
@@ -100,6 +101,10 @@ class Member(TimeStampedModel):
     def __str__(self):
         return '{}:{}'.format(self.group, self.user)
 
+    @property
+    def is_invited(self):
+        return self.inviter is not None
+
 
 class MobileNumber(TimeStampedModel):
     user = models.ForeignKey(
@@ -120,3 +125,9 @@ class MobileNumber(TimeStampedModel):
 
     def __str__(self):
         return self.number
+
+    @property
+    def is_verification_code_expired(self):
+        if self.verification_code_expired:
+            return timezone.now() > self.verification_code_expired
+        return False
