@@ -1,8 +1,10 @@
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
-    MemberInviterSerializer, MemberUserSerializer,
+    MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
 )
-from .models import Group, Profile, Member
+from .models import (
+    Group, Profile, Member, GroupMemberRank,
+)
 from rest_framework import (
     viewsets, generics, permissions
 )
@@ -66,3 +68,15 @@ class MemberUserViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return user.inviter_kehubu_member_set.all()
+
+
+class GroupMemberRankViewSet(viewsets.ModelViewSet):
+    serializer_class = GroupMemberRankSerializer
+    queryset = GroupMemberRank.objects.all()
+    permission_classes = [IsGroupCreator]
+    filterset_fields = ('group', )
+
+    def get_queryset(self):
+        user = self.request.user
+        group_set = user.creator_kehubu_group_set.all()
+        return GroupMemberRank.objects.filter(group__in=group_set)

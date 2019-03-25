@@ -1,4 +1,4 @@
-from .models import Group, Profile, Member
+from .models import Group, Profile, Member, GroupMemberRank
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
@@ -78,3 +78,9 @@ class MemberInviterSerializer(serializers.ModelSerializer):
         model = Member
         fields = ["inviter", "created", "id", "group"]
         read_only_fields = ['group']
+
+
+class GroupMemberRankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupMemberRank
+        fields = "__all__"
