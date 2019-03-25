@@ -1,5 +1,6 @@
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
+    MemberInviterSerializer, MemberUserSerializer,
 )
 from .models import Group, Profile, Member
 from rest_framework import (
@@ -43,3 +44,25 @@ class MemberViewSet(viewsets.ModelViewSet):
         user = self.request.user
         group_set = user.creator_kehubu_group_set.all()
         return Member.objects.filter(group__in=group_set)
+
+
+class MemberInviterViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MemberInviterSerializer
+    queryset = Member.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = ('user', 'inviter', 'group')
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.user_kehubu_member_set.all()
+
+
+class MemberUserViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MemberUserSerializer
+    queryset = Member.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = ('user', 'user', 'group')
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.inviter_kehubu_member_set.all()

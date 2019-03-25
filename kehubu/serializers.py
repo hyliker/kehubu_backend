@@ -59,3 +59,22 @@ class JoinGroupSerializer(serializers.ModelSerializer):
         if self.context['request'].user == value:
             raise serializers.ValidationError('Invalid inviter')
         return value
+
+
+class MemberUserSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
+    class Meta:
+        model = Member
+        fields = ["user", "created", "id", "group"]
+        read_only_fields = ['group']
+        depth = 1
+
+
+class MemberInviterSerializer(serializers.ModelSerializer):
+    inviter = UserSerializer(read_only=True)
+    group = GroupSerializer(read_only=True)
+    class Meta:
+        model = Member
+        fields = ["inviter", "created", "id", "group"]
+        read_only_fields = ['group']
