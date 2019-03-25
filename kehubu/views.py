@@ -6,7 +6,7 @@ from rest_framework import (
     viewsets, generics, permissions
 )
 from .permissions import (
-    IsOwnerOrReadOnly, IsGroupCreatorOrReadOnly
+    IsOwnerOrReadOnly, IsGroupCreatorOrReadOnly, IsGroupCreator,
 )
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -36,5 +36,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
     queryset = Member.objects.all()
-    permission_classes = [IsGroupCreatorOrReadOnly]
+    permission_classes = [IsGroupCreator]
     filterset_fields = ('user', 'inviter', 'group')
+
+    def get_queryset(self):
+        user = self.request.user
+        group_set = user.creator_kehubu_group_set.all()
+        return Member.objects.filter(group__in=group_set)
