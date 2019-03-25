@@ -34,10 +34,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    inviter = UserSerializer(read_only=True)
     class Meta:
         model = Member
         fields = "__all__"
-
 
 class JoinGroupSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
