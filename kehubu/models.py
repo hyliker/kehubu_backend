@@ -98,6 +98,9 @@ class Member(TimeStampedModel):
     is_starred = models.NullBooleanField(_('is starred'))
     is_blocked = models.NullBooleanField(_('is blocked'))
 
+    class Meta:
+        unique_together = ('group', 'user')
+
     def __str__(self):
         return '{}:{}'.format(self.group, self.user)
 
