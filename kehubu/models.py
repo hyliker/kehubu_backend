@@ -59,6 +59,12 @@ class Group(TimeStampedModel):
         self.member_count = self.group_kehubu_member_set.count()
         self.save(update_fields=['member_count'])
 
+    def add_member(self, user, inviter=None):
+        return Member.objects.get_or_create(group=self, user=user, defaults=dict(inviter=inviter))
+
+    def add_creator_member(self):
+        return self.add_member(self.creator)
+
 
 class GroupMemberRank(TimeStampedModel):
     group = models.ForeignKey('group', on_delete=models.CASCADE)
