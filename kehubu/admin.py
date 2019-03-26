@@ -9,7 +9,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(models.Group)
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ('id', 'creator', 'name', 'weighting', 'logo')
+    list_display = ('id', 'creator', 'name', 'member_count', 'weighting', 'logo')
     list_filter = ('created', 'modified')
     search_fields = ('name', )
 
