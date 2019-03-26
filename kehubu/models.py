@@ -43,9 +43,9 @@ class Group(TimeStampedModel):
         through_fields=('group', 'user'),
         related_name="member_kehubu_group_set"
     )
-    member_count = models.PositiveIntegerField(default=0)
+    member_count = models.PositiveIntegerField(default=0, editable=False)
     name = models.CharField(_('name'), max_length=32)
-    description = models.TextField(_('description'))
+    description = models.TextField(_('description'), blank=True)
     logo = models.ImageField(_('logo'), upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/", blank=True)
     weighting = models.PositiveSmallIntegerField(_('weighting'), default=0)
 
