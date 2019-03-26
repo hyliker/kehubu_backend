@@ -55,6 +55,10 @@ class Group(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    def update_member_count(self):
+        self.member_count = self.group_kehubu_member_set.count()
+        self.save(update_fields=['member_count'])
+
 
 class GroupMemberRank(TimeStampedModel):
     group = models.ForeignKey('group', on_delete=models.CASCADE)
