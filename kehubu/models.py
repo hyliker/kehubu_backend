@@ -97,9 +97,9 @@ class Member(TimeStampedModel):
         blank=True,
         related_name='members',
     )
-    remark_name = models.CharField(_('remark name'), max_length=32)
-    tags =  TaggableManager()
-    description = models.TextField(_('description'))
+    remark_name = models.CharField(_('remark name'), max_length=32, blank=True)
+    tags =  TaggableManager(blank=True)
+    description = models.TextField(_('description'), blank=True)
     is_starred = models.NullBooleanField(_('is starred'))
     is_blocked = models.NullBooleanField(_('is blocked'))
 
