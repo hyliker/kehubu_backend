@@ -13,6 +13,7 @@ django-taggit = "*"
 pillow = "*"
 djangorestframework = "*"
 django-filter = "*"
+django-allauth = "*"
 
 [requires]
 python_version = "3.6"
