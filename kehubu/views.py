@@ -6,11 +6,14 @@ from .models import (
     Group, Profile, Member, GroupMemberRank,
 )
 from rest_framework import (
-    viewsets, generics, permissions
+    viewsets, generics, permissions, filters
 )
 from .permissions import (
     IsOwnerOrReadOnly, IsGroupCreatorOrReadOnly, IsGroupCreator,
 )
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter, SearchFilter
+
 
 class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
@@ -18,6 +21,9 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly]
     owner_field = "creator"
     filterset_fields = ('creator', 'name', 'members')
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    ordering_fields = ('id', 'name', 'member_count', 'weighting', 'created', 'modified')
+    search_fields = ('name', )
 
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
