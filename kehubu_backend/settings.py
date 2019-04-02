@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.weixin',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +144,17 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'weixin': {
+        'AUTHORIZE_URL': 'https://open.weixin.qq.com/connect/oauth2/authorize',  # for media platform
+        'SCOPE': ['snsapi_base'],
+    }
+}
+
+ACCOUNT_ADAPTER = 'kehubu.adapters.KehubuAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'kehubu.adapters.KehubuSocialAccountAdapter'
 
 try:
     from .local_settings import *
