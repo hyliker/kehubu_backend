@@ -6,11 +6,13 @@ from .models import (
     Group, Profile, Member, GroupMemberRank,
 )
 from rest_framework import (
-    viewsets, generics, permissions, filters
+        viewsets, generics, permissions, filters, exceptions
 )
 from .permissions import (
     IsOwnerOrReadOnly, IsGroupCreatorOrReadOnly, IsGroupCreator,
 )
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 
@@ -40,6 +42,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     permission_classes = [IsOwnerOrReadOnly]
     owner_field = "user"
+
+    @action(detail=False, permission_classes=[permissions.IsAuthenticated])
+    def me(self, request):
+        user = request.user
+        serializer = self.get_serializer(user.kehubu_profile)
+        return Response(serializer.data)
 
 
 class MemberViewSet(viewsets.ModelViewSet):
