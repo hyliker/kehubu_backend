@@ -55,6 +55,8 @@ class MemberViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.all()
     permission_classes = [IsGroupCreator]
     filterset_fields = ('user', 'inviter', 'group')
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    search_fields = ('user__kehubu_profile__nickname', 'inviter__kehubu_profile__nickname')
 
     def get_queryset(self):
         user = self.request.user

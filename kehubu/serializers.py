@@ -4,10 +4,24 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
 
-class UserSerializer(serializers.ModelSerializer):
+class ProfileOnlySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = "__all__"
+        read_only_fields = ['user']
+
+
+class UserOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    kehubu_profile = ProfileOnlySerializer(read_only=True)
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined', 'kehubu_profile')
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -26,11 +40,12 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = UserOnlySerializer(read_only=True)
     class Meta:
         model = Profile
         fields = "__all__"
         read_only_fields = ['user']
+
 
 
 class MemberSerializer(serializers.ModelSerializer):
