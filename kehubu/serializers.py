@@ -32,7 +32,11 @@ class GroupSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value):
         user = self.context['request'].user
-        if user.creator_kehubu_group_set.filter(name=value).exists():
+        if self.instance:
+            other_group_set = user.creator_kehubu_group_set.exclude(pk=self.instance.pk)
+        else:
+            other_group_set = user.creator_kehubu_group_set
+        if other_group_set.filter(name=value).exists():
             raise serializers.ValidationError(
                 _('You cannot create same name group again.')
             )
