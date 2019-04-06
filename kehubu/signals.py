@@ -1,5 +1,8 @@
 from django.dispatch import receiver
 from django.db.models import signals
+from allauth.socialaccount.signals import (
+    social_account_added, social_account_updated
+)
 from .models import Member, Group, Profile
 from django.conf import settings
 
@@ -27,3 +30,14 @@ def group_post_save(sender, instance, created, **kwargs):
 def user_model_post_save(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
+
+@receiver(social_account_added)
+def on_social_account_added(request, sociallogin, **kwargs):
+    provider = sociallogin.account.provider
+    sociallogin.user.kehubu_profile.update_by_socialaccount(provider)
+
+@receiver(social_account_updated)
+def on_social_account_updated(request, sociallogin, **kwargs):
+    provider = sociallogin.account.provider
+    sociallogin.user.kehubu_profile.update_by_socialaccount(provider)

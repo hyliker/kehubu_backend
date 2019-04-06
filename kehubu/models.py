@@ -6,6 +6,9 @@ from model_utils.models import TimeStampedModel
 from model_utils import Choices
 from taggit.managers import TaggableManager
 from django.utils import timezone
+from django.core.files.base import ContentFile
+from urllib.parse import urlparse
+import requests
 
 
 class Profile(models.Model):
@@ -29,6 +32,37 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+    def update_by_socialaccount(self, provider):
+        if provider == "weixin":
+            self.update_by_social_weixin()
+
+    def update_by_social_weixin(self):
+        account = self.user.socialaccount_set.get(provider='weixin')
+        data = account.extra_data
+        sex = data.get('sex')
+        if sex == 1:
+            gender = self.GENDER.male
+        elif sex == 2:
+            gender = self.GENDER.female
+        else:
+            gender = self.GENDER.unknown
+        self.gender =  gender
+        self.nickname = data.get('nickname', '')
+        self.country = data.get('country', '')
+        self.province = data.get('province', '')
+        self.city = data.get('city', '')
+        headimgurl = data.get('headimgurl', '')
+        if headimgurl:
+            try:
+                response = requests.get(headimgurl, timeout=3)
+            except requests.exceptions.ConnectTimeout:
+                pass
+            else:
+                name = urlparse(headimgurl).path.split('/')[-1]
+                if response.status_code == 200:
+                    self.head_image.save(name, ContentFile(response.content), save=True)
+        self.save()
 
 
 class Group(TimeStampedModel):
