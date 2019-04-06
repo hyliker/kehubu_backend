@@ -1,4 +1,5 @@
 from django.http.response import HttpResponseRedirect
+from django.urls import reverse
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
@@ -34,7 +35,10 @@ class GroupViewSet(viewsets.ModelViewSet):
     @action(detail=True, permission_classes=[permissions.AllowAny])
     def join(self, request, pk=None):
         if not request.user.is_authenticated:
-            return HttpResponseRedirect("/api/accounts/weixin/login/?process=login")
+            weixin_login_url = reverse("weixin_login")
+            group_join_url = reverse("group-join")
+            redirect_url = "{}?process=login&next={}".format(weixin_login_url, group_join_url)
+            return HttpResponseRedirect(redirect_url)
 
         group = self.get_object()
         inviter_id = request.query_params.get('inviter_id')
@@ -42,7 +46,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         serializer = JoinGroupSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return HttpResponseRedirect("/")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
