@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
@@ -6,7 +7,7 @@ from .models import (
     Group, Profile, Member, GroupMemberRank,
 )
 from rest_framework import (
-        viewsets, generics, permissions, filters, exceptions
+        viewsets, generics, permissions, filters, exceptions, status,
 )
 from .permissions import (
     IsOwnerOrReadOnly, IsGroupCreatorOrReadOnly, IsGroupCreator,
@@ -29,6 +30,20 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
+
+    @action(detail=True, permission_classes=[permissions.AllowAny])
+    def join(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect("/api/accounts/weixin/login/?process=login")
+
+        group = self.get_object()
+        inviter_id = request.query_params.get('inviter_id')
+        data = dict(group=group.pk, inviter=inviter_id)
+        serializer = JoinGroupSerializer(data=data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class JoinGroupView(generics.CreateAPIView):
