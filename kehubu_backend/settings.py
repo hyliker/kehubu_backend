@@ -151,7 +151,7 @@ SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
     'weixin': {
         'AUTHORIZE_URL': 'https://open.weixin.qq.com/connect/oauth2/authorize',  # for media platform
-        'SCOPE': ['snsapi_base'],
+        'SCOPE': ['snsapi_userinfo'],
     }
 }
 
