@@ -15,6 +15,7 @@ djangorestframework = "*"
 django-filter = "*"
 django-allauth = "*"
 psycopg2-binary = "*"
+channels = "*"
 
 [requires]
 python_version = "3.6"
