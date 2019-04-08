@@ -9,7 +9,10 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 from urllib.parse import urlparse
 import requests
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
+channel_layer = get_channel_layer()
 
 class Profile(models.Model):
     GENDER = Choices(('m', 'male', _('male')), ('f', 'female', _('female')), ('u', 'unknown', _('unknown')))
@@ -101,6 +104,10 @@ class Group(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    @property
+    def channel_name(self):
+        return "kehubu.group.{}".format(self.pk)
+
     def update_member_count(self):
         self.member_count = self.group_kehubu_member_set.count()
         self.save(update_fields=['member_count'])
@@ -110,6 +117,12 @@ class Group(TimeStampedModel):
 
     def add_creator_member(self):
         return self.add_member(self.creator)
+
+    def message_channel(self, message):
+        try:
+            async_to_sync(channel_layer.group_send)(self.channel_name, message)
+        except Exception as exc:
+            print(exc)
 
 
 class GroupMemberRank(TimeStampedModel):
