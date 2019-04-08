@@ -16,6 +16,7 @@ django-filter = "*"
 django-allauth = "*"
 psycopg2-binary = "*"
 channels = "*"
+channels-redis = "*"
 
 [requires]
 python_version = "3.6"
