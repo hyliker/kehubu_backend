@@ -79,6 +79,10 @@ class GroupQuerySet(models.QuerySet):
 
 
 class Group(TimeStampedModel):
+    VISIBLE = Choices(
+        (0, 'PUBLIC', _('public')),
+        (1, 'PRIVATE', _('private')),
+        )
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -95,6 +99,7 @@ class Group(TimeStampedModel):
     description = models.TextField(_('description'), blank=True)
     logo = models.ImageField(_('logo'), upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/", blank=True)
     weighting = models.PositiveSmallIntegerField(_('weighting'), default=0)
+    visible = models.PositiveSmallIntegerField(_('visible'), choices=VISIBLE, default=VISIBLE.PUBLIC)
 
     objects = GroupQuerySet.as_manager()
 
