@@ -22,7 +22,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticated]
     owner_field = "creator"
     filterset_fields = ('creator', 'name', 'members')
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
@@ -31,6 +31,10 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(creator=self.request.user)
+
+    def get_queryset(self):
+        user_group_ids = self.request.user.user_kehubu_member_set.values_list("group", flat=True)
+        return self.queryset.filter(pk__in=user_group_ids)
 
     @action(detail=True, permission_classes=[permissions.AllowAny])
     def join(self, request, pk=None):
