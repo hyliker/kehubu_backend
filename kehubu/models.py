@@ -129,6 +129,9 @@ class Group(TimeStampedModel):
         except Exception as exc:
             print(exc)
 
+    def has_member(self, user):
+        return self.group_kehubu_member_set.filter(user=user).exists()
+
 
 class GroupMemberRank(TimeStampedModel):
     group = models.ForeignKey('group', on_delete=models.CASCADE)

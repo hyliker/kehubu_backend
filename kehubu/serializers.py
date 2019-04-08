@@ -75,8 +75,13 @@ class JoinGroupSerializer(serializers.ModelSerializer):
         return value
 
     def validate_inviter(self, value):
+        group = self.context['group']
+        if not group.has_member(value):
+            raise serializers.ValidationError(
+                _('Only the member of the group can be your valid inviter.'))
+
         if self.context['request'].user == value:
-            raise serializers.ValidationError('Invalid inviter')
+            raise serializers.ValidationError('You cannot invite yourself.')
         return value
 
     def validate(self, data):

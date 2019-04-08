@@ -48,7 +48,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         group = self.get_object()
         inviter = request.query_params.get('inviter')
         data = dict(group=group.pk, inviter=inviter)
-        serializer = JoinGroupSerializer(data=data, context={'request': request})
+        serializer = JoinGroupSerializer(data=data, context={'request': request, 'group': group})
         if serializer.is_valid():
             serializer.save()
             return HttpResponseRedirect("/")
