@@ -65,6 +65,16 @@ class Profile(models.Model):
         self.save()
 
 
+class GroupQuerySet(models.QuerySet):
+    def filter_member_user(self, user):
+        user_group_ids = user.user_kehubu_member_set.values_list("group", flat=True)
+        return self.filter(pk__in=user_group_ids)
+
+    def filter_member_inviter(self, inviter):
+        inviter_group_ids = user.inviter_kehubu_member_set.values_list("group", flat=True)
+        return self.filter(pk__in=inviter_group_ids)
+
+
 class Group(TimeStampedModel):
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -82,6 +92,8 @@ class Group(TimeStampedModel):
     description = models.TextField(_('description'), blank=True)
     logo = models.ImageField(_('logo'), upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/", blank=True)
     weighting = models.PositiveSmallIntegerField(_('weighting'), default=0)
+
+    objects = GroupQuerySet.as_manager()
 
     class Meta:
         unique_together = ('creator', 'name')

@@ -33,8 +33,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         return serializer.save(creator=self.request.user)
 
     def get_queryset(self):
-        user_group_ids = self.request.user.user_kehubu_member_set.values_list("group", flat=True)
-        return self.queryset.filter(pk__in=user_group_ids)
+        return self.queryset.filter_member_user(self.request.user)
 
     @action(detail=True, permission_classes=[permissions.AllowAny])
     def join(self, request, pk=None):
