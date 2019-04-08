@@ -33,6 +33,8 @@ class GroupViewSet(viewsets.ModelViewSet):
         return serializer.save(creator=self.request.user)
 
     def get_queryset(self):
+        if self.action == "join":
+            return self.queryset
         return self.queryset.filter_member_user(self.request.user)
 
     @action(detail=True, permission_classes=[permissions.AllowAny])
