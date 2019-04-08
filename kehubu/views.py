@@ -24,9 +24,9 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticated]
     owner_field = "creator"
-    filterset_fields = ('creator', 'name', 'members')
+    filterset_fields = ('creator', 'name', 'members', 'visible')
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
-    ordering_fields = ('id', 'name', 'member_count', 'weighting', 'created', 'modified')
+    ordering_fields = ('id', 'name', 'member_count', 'weighting', 'visible', 'created', 'modified')
     search_fields = ('name', )
 
     def perform_create(self, serializer):
@@ -46,8 +46,8 @@ class GroupViewSet(viewsets.ModelViewSet):
             return HttpResponseRedirect(redirect_url)
 
         group = self.get_object()
-        inviter_id = request.query_params.get('inviter_id')
-        data = dict(group=group.pk, inviter=inviter_id)
+        inviter = request.query_params.get('inviter')
+        data = dict(group=group.pk, inviter=inviter)
         serializer = JoinGroupSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             serializer.save()

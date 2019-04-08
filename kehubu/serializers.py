@@ -79,6 +79,15 @@ class JoinGroupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Invalid inviter')
         return value
 
+    def validate(self, data):
+        group = data.get('group')
+        if group.visible == group.VISIBLE.PRIVATE:
+            inviter = data.get('inviter')
+            if inviter is None:
+                raise serializers.ValidationError(
+                    _('Cannot join private group without an inviter.'))
+        return data
+
 
 class MemberUserSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
