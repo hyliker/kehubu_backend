@@ -134,6 +134,9 @@ class Group(TimeStampedModel):
     def has_member(self, user):
         return self.group_kehubu_member_set.filter(user=user).exists()
 
+    def check_invitation(self, inviter, code):
+        return GroupInvitation.timeframed.filter(group=self, inviter=inviter, code=code).exists()
+
 
 def make_invitation_code():
     return get_random_string(6)

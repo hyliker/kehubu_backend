@@ -61,6 +61,7 @@ class MemberSerializer(serializers.ModelSerializer):
 
 class JoinGroupSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Member
         fields = ['user', 'group', 'inviter', 'created', 'modified']
@@ -76,21 +77,27 @@ class JoinGroupSerializer(serializers.ModelSerializer):
 
     def validate_inviter(self, value):
         group = self.context['group']
-        if not group.has_member(value):
-            raise serializers.ValidationError(
-                _('Only the member of the group can be your valid inviter.'))
+        if value is None:
+            if group.visible == Group.VISIBLE.PRIVATE:
+                raise serializers.ValidationError('You need an inviter to join in the group')
+        else:
+            if not group.has_member(value):
+                raise serializers.ValidationError(
+                    _('Only the member of the group can be your valid inviter.'))
 
-        if self.context['request'].user == value:
-            raise serializers.ValidationError('You cannot invite yourself.')
+            if self.context['request'].user == value:
+                raise serializers.ValidationError('You cannot invite yourself.')
+
         return value
 
     def validate(self, data):
         group = data.get('group')
         if group.visible == group.VISIBLE.PRIVATE:
             inviter = data.get('inviter')
-            if inviter is None:
+            invitation_code = self.context['invitation_code']
+            if not group.check_invitation(inviter, invitation_code):
                 raise serializers.ValidationError(
-                    _('Cannot join private group without an inviter.'))
+                    _('Your invitation code is not existing or expired.'))
         return data
 
 
