@@ -46,6 +46,9 @@ class GroupViewSet(viewsets.ModelViewSet):
             return HttpResponseRedirect(redirect_url)
 
         group = self.get_object()
+        if group.has_member(request.user):
+            return HttpResponseRedirect("/")
+
         inviter = request.query_params.get('inviter')
         invitation_code = request.query_params.get('invitation_code')
         data = dict(group=group.pk, inviter=inviter)
