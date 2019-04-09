@@ -1,4 +1,6 @@
-from .models import Group, Profile, Member, GroupMemberRank
+from .models import (
+    Group, Profile, Member, GroupMemberRank, GroupInvitation,
+)
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
@@ -124,3 +126,34 @@ class GroupMemberRankSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupMemberRank
         fields = "__all__"
+
+
+class GroupPKField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        user = self.context['request'].user
+        return Group.objects.filter_member_user(user)
+
+class GroupInvitationSerializer(serializers.ModelSerializer):
+    inviter = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    group = GroupPKField()
+    is_valid = serializers.ReadOnlyField()
+    link = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GroupInvitation
+        fields = "__all__"
+        read_only_fields = ['inviter', 'code']
+
+    def get_link(self, obj):
+        return self.context['request'].build_absolute_uri(obj.link)
+
+    def validate(self, data):
+        start = data.get('start')
+        end = data.get('end')
+
+        if start and end:
+            if start > end:
+                raise serializers.ValidationError(
+                    _('End must be greater than start.')
+                )
+        return data

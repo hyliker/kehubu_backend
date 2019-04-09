@@ -1,7 +1,9 @@
 # coding: utf-8
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import get_random_string
 from model_utils.models import TimeStampedModel, TimeFramedModel
@@ -76,7 +78,7 @@ class GroupQuerySet(models.QuerySet):
         return self.filter(pk__in=user_group_ids)
 
     def filter_member_inviter(self, inviter):
-        inviter_group_ids = user.inviter_kehubu_member_set.values_list("group", flat=True)
+        inviter_group_ids = inviter.inviter_kehubu_member_set.values_list("group", flat=True)
         return self.filter(pk__in=inviter_group_ids)
 
 
@@ -154,10 +156,21 @@ class GroupInvitation(TimeFramedModel):
         return self.code
 
     @property
+    def link(self):
+        group_join_url = reverse("group-join", kwargs=dict(pk=self.group_id))
+        return "{}?inviter={}&invitation_code={}".format(group_join_url, self.inviter_id, self.code)
+
+    @property
     def is_valid(self):
         if self.end is None:
             return True
         return self.end >= timezone.now()
+
+    def clean(self):
+        if self.start and self.end:
+            if self.start > self.end:
+                raise ValidationError({
+                    'end': _('End must be greater than start.')})
 
 
 class GroupMemberRank(TimeStampedModel):

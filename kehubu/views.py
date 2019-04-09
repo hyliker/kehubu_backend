@@ -3,9 +3,10 @@ from django.urls import reverse
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
+    GroupInvitationSerializer,
 )
 from .models import (
-    Group, Profile, Member, GroupMemberRank,
+    Group, Profile, Member, GroupMemberRank, GroupInvitation,
 )
 from rest_framework import (
         viewsets, generics, permissions, filters, exceptions, status,
@@ -125,3 +126,19 @@ class GroupMemberRankViewSet(viewsets.ModelViewSet):
         user = self.request.user
         group_set = user.creator_kehubu_group_set.all()
         return GroupMemberRank.objects.filter(group__in=group_set)
+
+
+class GroupInvitationViewSet(viewsets.ModelViewSet):
+    serializer_class = GroupInvitationSerializer
+    queryset = GroupInvitation.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    filterset_fields = ('group', )
+    search_fields = ('group', )
+
+    def get_queryset(self):
+        user = self.request.user
+        valid = self.request.query_params.get('valid')
+        if valid == '1':
+            return GroupInvitation.timeframed.filter(inviter=user)
+        return user.inviter_kehubu_invitation_code_set.all()
