@@ -27,9 +27,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    creator = UserSerializer(read_only=True)
+
     class Meta:
         model = Group
-        fields = "__all__"
+        exclude = ["members"]
         read_only_fields = ['creator']
 
     def validate_name(self, value):
