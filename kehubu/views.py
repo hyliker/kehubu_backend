@@ -83,14 +83,15 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
     queryset = Member.objects.all()
-    permission_classes = [IsGroupCreator]
+    permission_classes = [IsGroupCreatorOrReadOnly, permissions.IsAuthenticated]
     filterset_fields = ('user', 'inviter', 'group')
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     search_fields = ('user__kehubu_profile__nickname', 'inviter__kehubu_profile__nickname')
 
     def get_queryset(self):
         user = self.request.user
-        group_set = user.creator_kehubu_group_set.all()
+        user_member_set = user.user_kehubu_member_set.all()
+        group_set = user_member_set.values_list("group", flat=True)
         return Member.objects.filter(group__in=group_set)
 
 
