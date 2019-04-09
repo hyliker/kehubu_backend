@@ -1,8 +1,10 @@
 # coding: utf-8
 from django.db import models
+from django.utils import timezone
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from model_utils.models import TimeStampedModel
+from django.utils.crypto import get_random_string
+from model_utils.models import TimeStampedModel, TimeFramedModel
 from model_utils import Choices
 from taggit.managers import TaggableManager
 from django.utils import timezone
@@ -131,6 +133,28 @@ class Group(TimeStampedModel):
 
     def has_member(self, user):
         return self.group_kehubu_member_set.filter(user=user).exists()
+
+
+def make_invitation_code():
+    return get_random_string(6)
+
+class GroupInvitation(TimeFramedModel):
+    group = models.ForeignKey('group', on_delete=models.CASCADE)
+    inviter = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="inviter_kehubu_invitation_code_set",
+    )
+    code = models.CharField(max_length=6, default=make_invitation_code, editable=False)
+
+    def __str__(self):
+        return self.code
+
+    @property
+    def is_valid(self):
+        if self.end is None:
+            return True
+        return self.end >= timezone.now()
 
 
 class GroupMemberRank(TimeStampedModel):
