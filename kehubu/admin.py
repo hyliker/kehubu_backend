@@ -14,6 +14,13 @@ class GroupAdmin(admin.ModelAdmin):
     search_fields = ('name', )
 
 
+@admin.register(models.GroupInvitation)
+class GroupInvitationAdmin(admin.ModelAdmin):
+    list_display = ('group', 'inviter', 'code', 'start', 'end', 'is_valid')
+    list_filter = ('start', 'end')
+    search_fields = ('group__name', 'inviter__username', 'code')
+
+
 @admin.register(models.Member)
 class MemberAdmin(admin.ModelAdmin):
     list_display = ('group', 'user', 'inviter', 'remark_name', 'is_starred', 'is_blocked')
