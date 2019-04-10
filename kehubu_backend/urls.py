@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/kehubu/', include('kehubu.urls')),
     path('api/auth/', include('rest_framework.urls')),
     path('api/accounts/', include('allauth.urls')),
+    path('api/activity/', include('actstream.urls')),
 ]
 
 if settings.DEBUG:
