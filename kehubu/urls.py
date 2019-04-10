@@ -13,4 +13,5 @@ router.register(r'groupinvitation', views.GroupInvitationViewSet, basename='grou
 urlpatterns = router.urls
 urlpatterns += [
     path('joingroup/', views.JoinGroupView.as_view(), name='JoinGroup'),
+    path('activity/', views.ActivityListView.as_view(), name='activie-list'),
 ]

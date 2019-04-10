@@ -7,7 +7,7 @@ from .models import Member, Group, Profile
 from django.conf import settings
 from .serializers import MemberSerializer
 from actstream import action
-
+from actstream.actions import follow, unfollow
 
 
 @receiver(signals.post_save, sender=Member)
@@ -18,6 +18,7 @@ def member_post_save(sender, instance, created, **kwargs):
         serializer = MemberSerializer(instance)
         group.message_channel(dict(type='kehubu.member.add', member=serializer.data))
         action.send(instance.user, verb='joined', target=group)
+        follow(instance.user, group)
 
 
 @receiver(signals.post_delete, sender=Member)
@@ -26,6 +27,7 @@ def member_post_delete(sender, instance, **kwargs):
     group.update_member_count()
     serializer = MemberSerializer(instance)
     group.message_channel(dict(type='kehubu.member.delete', member=serializer.data))
+    unfollow(instance.user, group)
 
 
 @receiver(signals.post_save, sender=Group)

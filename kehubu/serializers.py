@@ -4,6 +4,47 @@ from .models import (
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
+from actstream.models import Action
+
+
+class ActionSerializer(serializers.ModelSerializer):
+    description = serializers.ReadOnlyField(source='__str__')
+    actor = serializers.SerializerMethodField()
+    target = serializers.SerializerMethodField()
+    action_object = serializers.SerializerMethodField()
+    actor_url = serializers.SerializerMethodField()
+    target_url = serializers.SerializerMethodField()
+    action_object_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Action
+        fields = "__all__"
+
+    def get_object(self, obj, attr):
+        attrval= getattr(obj, attr)
+        if attrval:
+            return dict(name=str(attrval), type=attrval.__class__.__name__)
+
+    def get_actor(self, obj):
+        return self.get_object(obj, 'actor')
+
+    def get_target(self, obj):
+        return self.get_object(obj, 'target')
+
+    def get_action_object(self, obj):
+        return self.get_object(obj, 'action_object')
+
+    def get_actor_url(self, obj):
+        if obj.actor:
+            return obj.actor_url()
+
+    def get_action_object_url(self, obj):
+        if obj.action_object:
+            return obj.action_object_url()
+
+    def get_target_url(self, obj):
+        if obj.target:
+            return obj.target_url()
 
 
 class ProfileOnlySerializer(serializers.ModelSerializer):

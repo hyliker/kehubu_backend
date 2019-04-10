@@ -3,7 +3,7 @@ from django.urls import reverse
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
-    GroupInvitationSerializer,
+    GroupInvitationSerializer, ActionSerializer
 )
 from .models import (
     Group, Profile, Member, GroupMemberRank, GroupInvitation,
@@ -18,6 +18,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
+from actstream.models import Action
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -143,3 +144,16 @@ class GroupInvitationViewSet(viewsets.ModelViewSet):
         if valid == '1':
             return GroupInvitation.timeframed.filter(inviter=user)
         return user.inviter_kehubu_invitation_code_set.all()
+
+
+class ActivityListView(generics.ListAPIView):
+    serializer_class = ActionSerializer
+    queryset = Action.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    filterset_fields = ('actor_object_id', 'actor_content_type', 'action_object_object_id',
+        'action_object_content_type', 'target_object_id', 'target_content_type')
+
+    def get_queryset(self):
+        # TODO: filter user related activity set
+        return self.queryset
