@@ -17,6 +17,7 @@ django-allauth = "*"
 psycopg2-binary = "*"
 channels = "*"
 channels-redis = "*"
+django-activity-stream = "*"
 
 [requires]
 python_version = "3.6"
