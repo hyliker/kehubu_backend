@@ -6,6 +6,8 @@ from allauth.socialaccount.signals import (
 from .models import Member, Group, Profile
 from django.conf import settings
 from .serializers import MemberSerializer
+from actstream import action
+
 
 
 @receiver(signals.post_save, sender=Member)
@@ -15,6 +17,7 @@ def member_post_save(sender, instance, created, **kwargs):
         group.update_member_count()
         serializer = MemberSerializer(instance)
         group.message_channel(dict(type='kehubu.member.add', member=serializer.data))
+        action.send(instance.user, verb='joined', target=group)
 
 
 @receiver(signals.post_delete, sender=Member)
