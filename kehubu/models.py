@@ -15,6 +15,9 @@ from urllib.parse import urlparse
 import requests
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
+
 
 channel_layer = get_channel_layer()
 
@@ -101,7 +104,11 @@ class Group(TimeStampedModel):
     member_count = models.PositiveIntegerField(default=0, editable=False)
     name = models.CharField(_('name'), max_length=32)
     description = models.TextField(_('description'), blank=True)
-    logo = models.ImageField(_('logo'), upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/", blank=True)
+    logo = ProcessedImageField(upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/",
+                               processors=[ResizeToFill(300, 300)],
+                               format='PNG',
+                               options={'quality': 80},
+                               blank=True)
     weighting = models.PositiveSmallIntegerField(_('weighting'), default=0)
     visible = models.PositiveSmallIntegerField(_('visible'), choices=VISIBLE, default=VISIBLE.PUBLIC)
 
