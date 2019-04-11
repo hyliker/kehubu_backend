@@ -112,6 +112,10 @@ class Group(TimeStampedModel):
     weighting = models.PositiveSmallIntegerField(_('weighting'), default=0)
     visible = models.PositiveSmallIntegerField(_('visible'), choices=VISIBLE, default=VISIBLE.PUBLIC)
 
+    notice = models.TextField(_('notice'), blank=True)
+    notice_updated = models.DateTimeField(_('notice updated'), editable=False, null=True)
+    notice_enabled = models.BooleanField(_('notice enabled'), default=False)
+
     objects = GroupQuerySet.as_manager()
 
     class Meta:
