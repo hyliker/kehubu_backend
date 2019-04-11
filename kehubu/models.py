@@ -17,6 +17,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from model_utils import FieldTracker
 
 
 channel_layer = get_channel_layer()
@@ -117,6 +118,7 @@ class Group(TimeStampedModel):
     notice_enabled = models.BooleanField(_('notice enabled'), default=False)
 
     objects = GroupQuerySet.as_manager()
+    tracker = FieldTracker()
 
     class Meta:
         unique_together = ('creator', 'name')

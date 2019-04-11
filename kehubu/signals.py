@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models import signals
 from allauth.socialaccount.signals import (
@@ -28,6 +29,12 @@ def member_post_delete(sender, instance, **kwargs):
     serializer = MemberSerializer(instance)
     group.message_channel(dict(type='kehubu.member.delete', member=serializer.data))
     unfollow(instance.user, group)
+
+
+@receiver(signals.pre_save, sender=Group)
+def group_pre_save(sender, instance, **kwargs):
+    if instance.tracker.has_changed('notice'):
+        instance.notice_updated = timezone.now()
 
 
 @receiver(signals.post_save, sender=Group)
