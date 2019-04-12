@@ -3,10 +3,12 @@ from django.urls import reverse
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
-    GroupInvitationSerializer, ActionSerializer
+    GroupInvitationSerializer, ActionSerializer, GroupAlbumSerializer,
+    GroupAlbumImageSerializer,
 )
 from .models import (
-    Group, Profile, Member, GroupMemberRank, GroupInvitation,
+    Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
+    GroupAlbumImage,
 )
 from rest_framework import (
         viewsets, generics, permissions, filters, exceptions, status,
@@ -157,3 +159,32 @@ class ActivityListView(generics.ListAPIView):
     def get_queryset(self):
         # TODO: filter user related activity set
         return self.queryset
+
+
+class GroupAlbumViewSet(viewsets.ModelViewSet):
+    serializer_class = GroupAlbumSerializer
+    queryset = GroupAlbum.objects.all()
+    permission_classes = [IsGroupCreatorOrReadOnly, permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    filterset_fields = ('group', )
+    search_fields = ('title', )
+
+    def get_queryset(self):
+        user = self.request.user
+        user_member_set = user.user_kehubu_member_set.all()
+        group_set = user_member_set.values_list("group", flat=True)
+        return GroupAlbum.objects.filter(group__in=group_set)
+
+
+class GroupAlbumImageViewSet(viewsets.ModelViewSet):
+    serializer_class = GroupAlbumImageSerializer
+    queryset = GroupAlbumImage.objects.all()
+    permission_classes = [IsGroupCreatorOrReadOnly, permissions.IsAuthenticated]
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    filterset_fields = ('album', 'album__group' )
+
+    def get_queryset(self):
+        user = self.request.user
+        user_member_set = user.user_kehubu_member_set.all()
+        group_set = user_member_set.values_list("group", flat=True)
+        return GroupAlbumImage.objects.filter(album__group__in=group_set)

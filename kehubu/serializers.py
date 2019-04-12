@@ -1,5 +1,6 @@
 from .models import (
-    Group, Profile, Member, GroupMemberRank, GroupInvitation,
+    Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
+    GroupAlbumImage,
 )
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -200,3 +201,30 @@ class GroupInvitationSerializer(serializers.ModelSerializer):
                     _('End must be greater than start.')
                 )
         return data
+
+
+class GroupAlbumPKField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        user = self.context['request'].user
+        return GroupAlbum.objects.filter(group__creator=user)
+
+
+class GroupAlbumImageSerializer(serializers.ModelSerializer):
+    album = GroupAlbumPKField()
+    class Meta:
+        model = GroupAlbumImage
+        fields = "__all__"
+
+    def get_queryset(self):
+        user = self.context['request'].user
+        print('user', user)
+        return GroupAlbumImage.objects.all()
+
+
+class GroupAlbumSerializer(serializers.ModelSerializer):
+    groupalbumimage_set = GroupAlbumImageSerializer(many=True)
+    group = GroupPKField()
+  
+    class Meta:
+        model = GroupAlbum
+        fields = "__all__"
