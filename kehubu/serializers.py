@@ -70,6 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class GroupSerializer(serializers.ModelSerializer):
     creator = UserSerializer(read_only=True)
+    album_count = serializers.ReadOnlyField()
 
     class Meta:
         model = Group
@@ -87,6 +88,7 @@ class GroupSerializer(serializers.ModelSerializer):
                 _('You cannot create same name group again.')
             )
         return value
+
 
 
 class ProfileSerializer(serializers.ModelSerializer):

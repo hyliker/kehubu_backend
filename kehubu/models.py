@@ -153,6 +153,11 @@ class Group(TimeStampedModel):
     def check_invitation(self, inviter, code):
         return GroupInvitation.timeframed.filter(group=self, inviter=inviter, code=code).exists()
 
+    @property
+    def album_count(self):
+        return self.groupalbum_set.count()
+
+
 
 def make_invitation_code():
     return get_random_string(6)
