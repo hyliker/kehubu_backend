@@ -42,3 +42,22 @@ class GroupMemberRankAdmin(admin.ModelAdmin):
     list_display = ('group', 'name', 'weighting', 'created')
     search_fields = ('name', )
     list_filter = ('created', 'modified')
+
+
+class GroupAlbumImageInline(admin.TabularInline):
+    model = models.GroupAlbumImage
+
+
+@admin.register(models.GroupAlbum)
+class GroupAlbumAdmin(admin.ModelAdmin):
+    list_display = ('group', 'title', 'created')
+    search_fields = ('title', )
+    list_filter = ('created', 'modified')
+    inlines = [GroupAlbumImageInline]
+
+
+@admin.register(models.GroupAlbumImage)
+class GroupAlbumImageAdmin(admin.ModelAdmin):
+    list_display = ('album', 'image', 'created')
+    list_filter = ('created', 'modified')
+    search_fields = ('album__title', )
