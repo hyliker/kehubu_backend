@@ -18,6 +18,7 @@ from channels.layers import get_channel_layer
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from model_utils import FieldTracker
+from imagekit.models import ImageSpecField
 
 
 channel_layer = get_channel_layer()
@@ -265,3 +266,26 @@ class MobileNumber(TimeStampedModel):
         if self.verification_code_expired:
             return timezone.now() > self.verification_code_expired
         return False
+
+
+class GroupAlbum(TimeStampedModel):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    title = models.CharField(_('title'), max_length=70)
+    description = models.TextField(_('description'), max_length=1024, blank=True)
+    is_visible = models.BooleanField(_('is visible'), default=True)
+
+    def __str__(self):
+        return self.title
+
+
+class GroupAlbumImage(TimeStampedModel):
+    album = models.ForeignKey(GroupAlbum, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="uploads/kehubu.GroupAlbumImage.image/%Y/%m/%d/")
+    thumb = ImageSpecField(source='image',
+                           processors=[ResizeToFill(300)],
+                           format='JPEG',
+                           options={'quality': 70},
+                           )
+
+    def __str__(self):
+        return self.image.name
