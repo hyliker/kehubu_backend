@@ -211,20 +211,25 @@ class GroupAlbumPKField(serializers.PrimaryKeyRelatedField):
 
 class GroupAlbumImageSerializer(serializers.ModelSerializer):
     album = GroupAlbumPKField()
+    thumb = serializers.SerializerMethodField()
+
     class Meta:
         model = GroupAlbumImage
         fields = "__all__"
 
     def get_queryset(self):
         user = self.context['request'].user
-        print('user', user)
         return GroupAlbumImage.objects.all()
+
+    def get_thumb(self, obj):
+        request = self.context['request']
+        return request.build_absolute_uri(obj.thumb.url)
 
 
 class GroupAlbumSerializer(serializers.ModelSerializer):
     groupalbumimage_set = GroupAlbumImageSerializer(many=True)
     group = GroupPKField()
-  
+
     class Meta:
         model = GroupAlbum
         fields = "__all__"

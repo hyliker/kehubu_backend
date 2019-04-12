@@ -282,7 +282,7 @@ class GroupAlbumImage(TimeStampedModel):
     album = models.ForeignKey(GroupAlbum, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="uploads/kehubu.GroupAlbumImage.image/%Y/%m/%d/")
     thumb = ImageSpecField(source='image',
-                           processors=[ResizeToFill(300)],
+                           processors=[ResizeToFill(300, 300)],
                            format='JPEG',
                            options={'quality': 70},
                            )
