@@ -19,6 +19,7 @@ channels = "*"
 channels-redis = "*"
 django-activity-stream = "*"
 django-imagekit = "*"
+django-extra-fields = "*"
 
 [requires]
 python_version = "3.6"
