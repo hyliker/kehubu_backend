@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from actstream.models import Action
+from drf_extra_fields.fields import Base64ImageField
 
 
 class ActionSerializer(serializers.ModelSerializer):
@@ -229,9 +230,17 @@ class GroupAlbumImageSerializer(serializers.ModelSerializer):
 
 
 class GroupAlbumSerializer(serializers.ModelSerializer):
-    groupalbumimage_set = GroupAlbumImageSerializer(many=True)
+    groupalbumimage_set = GroupAlbumImageSerializer(many=True, read_only=True)
     group = GroupPKField()
+    images = serializers.ListField(child=Base64ImageField(), write_only=True, required=False)
 
     class Meta:
         model = GroupAlbum
         fields = "__all__"
+
+    def create(self, validated_data):
+        images = validated_data.pop("images", [])
+        album = super().create(validated_data)
+        for image in images:
+            GroupAlbumImage.objects.create(album=album, image=image)
+        return album
