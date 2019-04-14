@@ -244,3 +244,10 @@ class GroupAlbumSerializer(serializers.ModelSerializer):
         for image in images:
             GroupAlbumImage.objects.create(album=album, image=image)
         return album
+
+    def update(self, instance, validated_data):
+        images = validated_data.pop("images", [])
+        album = super().update(instance, validated_data)
+        for image in images:
+            GroupAlbumImage.objects.create(album=album, image=image)
+        return instance

@@ -15,6 +15,7 @@ from rest_framework import (
 )
 from .permissions import (
     IsOwnerOrReadOnly, IsGroupCreatorOrReadOnly, IsGroupCreator,
+    IsGroupAlbumCreatorOrReadOnly,
 )
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -179,7 +180,7 @@ class GroupAlbumViewSet(viewsets.ModelViewSet):
 class GroupAlbumImageViewSet(viewsets.ModelViewSet):
     serializer_class = GroupAlbumImageSerializer
     queryset = GroupAlbumImage.objects.all()
-    permission_classes = [IsGroupCreatorOrReadOnly, permissions.IsAuthenticated]
+    permission_classes = [IsGroupAlbumCreatorOrReadOnly, permissions.IsAuthenticated]
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     filterset_fields = ('album', 'album__group' )
 
