@@ -51,7 +51,13 @@ class IsGroupCreatorOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return bool(request.user and request.user.is_authenticated)
+
+        if request.user and request.user.is_authenticated:
+            group = request.data.get('group')
+            if not request.user.creator_kehubu_group_set.filter(pk=group).exists():
+                return False
+            return True
+        return False
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
