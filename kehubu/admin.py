@@ -61,3 +61,10 @@ class GroupAlbumImageAdmin(admin.ModelAdmin):
     list_display = ('album', 'image', 'created')
     list_filter = ('created', 'modified')
     search_fields = ('album__title', )
+
+
+@admin.register(models.GroupChat)
+class GroupChatAdmin(admin.ModelAdmin):
+    list_display = ('group', 'user', 'message_summary', 'created', 'modified')
+    list_filter = ('created', 'modified')
+    search_fields = ('message', )

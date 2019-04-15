@@ -294,3 +294,16 @@ class GroupAlbumImage(TimeStampedModel):
 
     def __str__(self):
         return self.image.name
+
+
+class GroupChat(TimeStampedModel):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    message = models.TextField()
+
+    def __str__(self):
+        return self.message_summary
+
+    @property
+    def message_summary(self):
+        return self.message[:100]
