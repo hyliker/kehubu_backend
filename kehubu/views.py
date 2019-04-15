@@ -4,11 +4,11 @@ from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
     GroupInvitationSerializer, ActionSerializer, GroupAlbumSerializer,
-    GroupAlbumImageSerializer,
+    GroupAlbumImageSerializer, GroupChatSerializer,
 )
 from .models import (
     Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
-    GroupAlbumImage,
+    GroupAlbumImage, GroupChat,
 )
 from rest_framework import (
         viewsets, generics, permissions, filters, exceptions, status,
@@ -189,3 +189,17 @@ class GroupAlbumImageViewSet(viewsets.ModelViewSet):
         user_member_set = user.user_kehubu_member_set.all()
         group_set = user_member_set.values_list("group", flat=True)
         return GroupAlbumImage.objects.filter(album__group__in=group_set)
+
+
+class GroupChatViewSet(viewsets.ModelViewSet):
+    serializer_class = GroupChatSerializer
+    queryset = GroupChat.objects.all()
+    permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticated]
+    owner_field = "user"
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    filterset_fields = ('group', 'user')
+    ordering_fields = ('id', 'created', 'modified')
+
+    def get_queryset(self):
+        group_set = self.request.user.kehubu_profile.group_set
+        return GroupChat.objects.filter(group__in=group_set)

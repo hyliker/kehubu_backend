@@ -1,6 +1,6 @@
 from .models import (
     Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
-    GroupAlbumImage,
+    GroupAlbumImage, GroupChat,
 )
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -251,3 +251,15 @@ class GroupAlbumSerializer(serializers.ModelSerializer):
         for image in images:
             GroupAlbumImage.objects.create(album=album, image=image)
         return instance
+
+class GroupChatSerializer(serializers.ModelSerializer):
+    group = GroupPKField()
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = GroupChat
+        fields = "__all__"
+
+    def to_representation(self, obj):
+        data = super().to_representation(obj)
+        data['user'] = UserSerializer(obj.user).data
+        return data

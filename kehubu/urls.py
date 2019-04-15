@@ -12,6 +12,7 @@ router.register(r'groupmemberrank', views.GroupMemberRankViewSet, basename='grou
 router.register(r'groupinvitation', views.GroupInvitationViewSet, basename='groupinvitation')
 router.register(r'groupalbum', views.GroupAlbumViewSet, basename='groupalbum')
 router.register(r'groupalbumimage', views.GroupAlbumImageViewSet, basename='groupalbumimage')
+router.register(r'groupchat', views.GroupChatViewSet, basename='groupchat')
 urlpatterns = router.urls
 urlpatterns += [
     path('joingroup/', views.JoinGroupView.as_view(), name='JoinGroup'),

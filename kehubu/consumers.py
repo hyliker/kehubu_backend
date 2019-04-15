@@ -29,3 +29,11 @@ class KehubuConsumer(JsonWebsocketConsumer):
     def kehubu_member_delete(self, content):
         print('kehubu_member_delete', content)
         self.send_json(content)
+
+    def kehubu_groupchat_add(self, content):
+        print('kehubu_groupchat_add', content)
+        self.send_json(content)
+
+    def kehubu_groupchat_update(self, content):
+        print('kehubu_groupchat_update', content)
+        self.send_json(content)

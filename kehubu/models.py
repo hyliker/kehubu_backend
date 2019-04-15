@@ -76,6 +76,12 @@ class Profile(models.Model):
                     self.head_image.save(name, ContentFile(response.content), save=True)
         self.save()
 
+    @property
+    def group_set(self):
+        user_member_set = self.user.user_kehubu_member_set.all()
+        group_set = user_member_set.values_list("group", flat=True)
+        return Group.objects.filter(pk__in=group_set)
+
 
 class GroupQuerySet(models.QuerySet):
     def filter_member_user(self, user):
