@@ -22,6 +22,8 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from actstream.models import Action
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -158,8 +160,20 @@ class ActivityListView(generics.ListAPIView):
         'action_object_content_type', 'target_object_id', 'target_content_type')
 
     def get_queryset(self):
-        # TODO: filter user related activity set
-        return self.queryset
+        #FIXME: only return the group related actions for now
+        group_ids = self.request.user.kehubu_profile.group_set.values_list("pk", flat=True)
+        ctype = ContentType.objects.get_for_model(Group)
+        return self.queryset.filter(
+            Q(
+                actor_content_type=ctype,
+                actor_object_id__in=group_ids,
+            ) | Q(
+                target_content_type=ctype,
+                target_object_id__in=group_ids,
+            ) | Q(
+                action_object_content_type=ctype,
+                action_object_object_id__in=group_ids,
+            ))
 
 
 class GroupAlbumViewSet(viewsets.ModelViewSet):
