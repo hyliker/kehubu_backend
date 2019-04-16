@@ -161,7 +161,8 @@ class ActivityListView(generics.ListAPIView):
 
     def get_queryset(self):
         #FIXME: only return the group related actions for now
-        group_ids = self.request.user.kehubu_profile.group_set.values_list("pk", flat=True)
+        group_set = self.request.user.kehubu_profile.group_set
+        group_ids = list(group_set.values_list("pk", flat=True))
         ctype = ContentType.objects.get_for_model(Group)
         return self.queryset.filter(
             Q(
