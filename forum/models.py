@@ -74,7 +74,7 @@ class Attachment(TimeStampedModel):
     group = models.ForeignKey('kehubu.Group', on_delete=models.CASCADE)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                                 related_name='forum_attachment_set')
-    file = models.FileField(upload_to="forum.Attachment.file/%Y/%m/%d/")
+    file = models.FileField(upload_to="uploads/forum.Attachment.file/%Y/%m/%d/")
     mimetype = models.CharField(max_length=24, editable=False)
 
     def __str__(self):
