@@ -77,10 +77,13 @@ class Profile(models.Model):
         self.save()
 
     @property
-    def group_set(self):
+    def group_ids(self):
         user_member_set = self.user.user_kehubu_member_set.all()
-        group_set = user_member_set.values_list("group", flat=True)
-        return Group.objects.filter(pk__in=group_set)
+        return list(user_member_set.values_list("group", flat=True))
+
+    @property
+    def group_set(self):
+        return Group.objects.filter(pk__in=self.group_ids)
 
 
 class GroupQuerySet(models.QuerySet):
