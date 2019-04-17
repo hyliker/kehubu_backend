@@ -30,7 +30,7 @@ class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
     permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticated]
     owner_field = "creator"
-    filterset_fields = ('category', 'creator', )
+    filterset_fields = ('category', 'creator', 'category__group')
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     ordering_fields = ('id', 'category', 'creator', 'created', 'modified')
     search_fields = ('title', )
@@ -45,7 +45,7 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticated]
     owner_field = "creator"
-    filterset_fields = ('topic', 'creator', )
+    filterset_fields = ('topic', 'creator', 'topic__category', 'topic__category__group')
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     ordering_fields = ('id', 'topic', 'creator', 'created', 'modified')
     search_fields = ('content', )
