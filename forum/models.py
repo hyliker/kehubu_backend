@@ -4,6 +4,8 @@ from mptt.models import MPTTModel, TreeForeignKey
 from model_utils.models import TimeStampedModel
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class Category(MPTTModel, TimeStampedModel):
@@ -25,6 +27,11 @@ class Category(MPTTModel, TimeStampedModel):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        if self.parent is not None:
+            if self.group != self.parent.group:
+                raise ValidationError(_("Parent category must be in same group"))
+
 
 class Topic(TimeStampedModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -41,6 +48,10 @@ class Topic(TimeStampedModel):
     def summary(self):
         return self.content[:200]
 
+    def clean(self):
+        if not self.category.group.has_member(self.creator):
+            raise ValidationError(_("Only group member can create topic"))
+
 
 class Post(TimeStampedModel):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
@@ -55,6 +66,9 @@ class Post(TimeStampedModel):
     def summary(self):
         return self.content[:200]
 
+    def clean(self):
+        if not self.topic.category.group.has_member(self.creator):
+            raise ValidationError(_("Only group member can create post"))
 
 class Attachment(TimeStampedModel):
     group = models.ForeignKey('kehubu.Group', on_delete=models.CASCADE)
@@ -65,3 +79,7 @@ class Attachment(TimeStampedModel):
 
     def __str__(self):
         return self.file.name
+
+    def clean(self):
+        if not self.group.has_member(self.creator):
+            raise ValidationError(_("Only group member can create attachment"))

@@ -5,25 +5,27 @@ from .models import Category, Topic, Post, Attachment
 
 @admin.register(Category)
 class CategoryAdmin(MPTTModelAdmin):
-    pass
+    list_display = ('name', 'group')
+    list_filter = ('created', 'modified')
+    search_fields = ('name', )
 
 
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ('category', 'title', 'created', 'modified')
+    list_display = ('creator', 'category', 'title', 'created', 'modified')
     list_filter = ('created', 'modified')
     search_fields = ('title', )
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('topic', 'summary', 'created', 'modified')
+    list_display = ('creator', 'topic', 'summary', 'created', 'modified')
     list_filter = ('created', 'modified')
     search_fields = ('content', )
 
 
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):
-    list_display = ('group', 'creator', 'file', 'created')
+    list_display = ('group', 'creator', 'file', 'mimetype', 'created')
     list_filter = ('created', 'modified')
     search_fields = ('file', )
