@@ -36,6 +36,15 @@ class Category(MPTTModel, TimeStampedModel):
             if self.group != self.parent.group:
                 raise ValidationError(_("Parent category must be in same group"))
 
+    def update_topic_count(self):
+        self.topic_count = self.topic_set.count()
+        self.save()
+
+    def update_post_count(self):
+        topic_set = self.topic_set.all()
+        self.post_count = Post.objects.filter(topic__in=topic_set).count()
+        self.save()
+
 
 class Topic(TimeStampedModel):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -56,6 +65,10 @@ class Topic(TimeStampedModel):
     def clean(self):
         if not self.category.group.has_member(self.creator):
             raise ValidationError(_("Only group member can create topic"))
+
+    def update_post_count(self):
+        self.post_count = self.post_set.count()
+        self.save()
 
 
 class Post(TimeStampedModel):
