@@ -22,6 +22,8 @@ django-imagekit = "*"
 django-extra-fields = "*"
 gunicorn = "*"
 twisted = {extras = ["http2", "tls"],version = "*"}
+django-mptt = "*"
+python-magic = "*"
 
 [requires]
 python_version = "3.6"

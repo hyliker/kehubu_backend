@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.weixin',
     'actstream',
     'imagekit',
+    'mptt',
+    'forum',
 ]
 
 MIDDLEWARE = [
