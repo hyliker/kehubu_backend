@@ -9,7 +9,7 @@ from imagekit.processors import ResizeToFill
 class Category(MPTTModel, TimeStampedModel):
     group = models.ForeignKey('kehubu.Group', on_delete=models.CASCADE,
                               related_name='forum_category_set')
-    name = models.CharField(max_length=24, unique=True)
+    name = models.CharField(max_length=24)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
                             related_name='children')
     description = models.TextField(blank=True)
@@ -19,6 +19,9 @@ class Category(MPTTModel, TimeStampedModel):
                                format='PNG',
                                options={'quality': 80},
                                blank=True)
+    class Meta:
+        unique_together = ('group', 'parent', 'name')
+
     def __str__(self):
         return self.name
 
