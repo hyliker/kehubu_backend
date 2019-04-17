@@ -1,6 +1,9 @@
 from django.contrib import admin
 from . import models
 
+admin.site.site_header = 'kehubu administration'
+admin.site.site_title = 'kehubu site admin'
+
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'nickname', 'id_type', 'id_number', 'gender', 'birthdate', 'country', 'province', 'city')
