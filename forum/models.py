@@ -21,6 +21,10 @@ class Category(MPTTModel, TimeStampedModel):
                                format='PNG',
                                options={'quality': 80},
                                blank=True)
+
+    topic_count = models.PositiveIntegerField(default=0)
+    post_count = models.PositiveIntegerField(default=0)
+
     class Meta:
         unique_together = ('group', 'parent', 'name')
 
@@ -40,6 +44,7 @@ class Topic(TimeStampedModel):
     title = models.CharField(max_length=128)
     content = models.TextField()
     is_published = models.BooleanField(default=True)
+    post_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
