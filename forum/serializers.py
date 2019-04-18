@@ -20,6 +20,9 @@ class TopicSerializer(serializers.ModelSerializer):
         model = Topic
         fields = "__all__"
 
+    def validate(self, attrs):
+        attrs['creator'] = self.context['request'].user
+        return attrs
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -27,6 +30,10 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = "__all__"
+
+    def validate(self, attrs):
+        attrs['creator'] = self.context['request'].user
+        return attrs
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
