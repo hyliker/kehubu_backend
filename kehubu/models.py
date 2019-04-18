@@ -115,6 +115,7 @@ class Group(TimeStampedModel):
     member_count = models.PositiveIntegerField(default=0, editable=False)
     name = models.CharField(_('name'), max_length=32)
     description = models.TextField(_('description'), blank=True)
+    cover = models.ImageField(upload_to="uploads/kehubu.Group.cover/%Y/%m/%d/", blank=True)
     logo = ProcessedImageField(upload_to="uploads/kehubu.Group.logo/%Y/%m/%d/",
                                processors=[ResizeToFill(300, 300)],
                                format='PNG',
