@@ -7,11 +7,20 @@ from drf_extra_fields.fields import Base64FileField
 from kehubu.serializers import UserSerializer
 
 
+
+class CategoryPKField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        user = self.context['request'].user
+        return Category.objects.filter(group__in=user.kehubu_profile.group_ids)
+
+
 class CategorySerializer(serializers.ModelSerializer):
+    parent  = CategoryPKField(allow_null=True, required=False)
+
     class Meta:
         model = Category
         fields = "__all__"
-
+        read_only_fields = ("lft", "rght", "level")
 
 
 class TopicSerializer(serializers.ModelSerializer):
