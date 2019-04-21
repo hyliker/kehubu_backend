@@ -8,13 +8,13 @@ from .serializers import (
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from kehubu.permissions import (IsGroupCreatorOrReadOnly, IsOwnerOrReadOnly)
-
+from .permissions import CategoryPermission
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-    permission_classes = [IsGroupCreatorOrReadOnly, permissions.IsAuthenticated]
+    permission_classes = [CategoryPermission]
     filterset_fields = ('group', 'name', 'parent', 'level')
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
     ordering_fields = ('id', 'name', 'group', 'priority', 'created', 'modified')
