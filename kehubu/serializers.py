@@ -1,3 +1,5 @@
+import time
+from django.utils.crypto import get_random_string
 from .models import (
     Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
     GroupAlbumImage, GroupChat,
@@ -7,6 +9,7 @@ from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from actstream.models import Action
 from drf_extra_fields.fields import Base64ImageField
+from .utils import get_wechat_client
 
 
 class ActionSerializer(serializers.ModelSerializer):
@@ -263,3 +266,25 @@ class GroupChatSerializer(serializers.ModelSerializer):
         data = super().to_representation(obj)
         data['user'] = UserSerializer(obj.user).data
         return data
+
+
+class WxConfigSerializer(serializers.Serializer):
+    url = serializers.URLField()
+
+    def validate_url(self, value):
+        return value.split("#")[0]
+
+    def save(self ):
+        url = self.validated_data.get('url')
+        request = self.context.get('request')
+        nonceStr = get_random_string(length=16)
+        timestamp =  int(time.time())
+        wxclient = get_wechat_client(request)
+        try:
+            ticket = wxclient.jsapi.get_ticket()
+        except Exception as exc:
+            raise serializers.ValidationError(str(exc))
+        else:
+            signature = wxclient.jsapi.get_jsapi_signature(noncestr, ticket, timestamp, url)
+        return dict(url=url, nonceStr=nonceStr, ticket=ticket, timestamp=timestamp, 
+                    signature=signature, appid=wxclient.appid)

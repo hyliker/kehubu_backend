@@ -1,17 +1,18 @@
 from django.http.response import HttpResponseRedirect
+from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from .serializers import (
     GroupSerializer, ProfileSerializer, MemberSerializer, JoinGroupSerializer,
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
     GroupInvitationSerializer, ActionSerializer, GroupAlbumSerializer,
-    GroupAlbumImageSerializer, GroupChatSerializer,
+    GroupAlbumImageSerializer, GroupChatSerializer, WxConfigSerializer,
 )
 from .models import (
     Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
     GroupAlbumImage, GroupChat,
 )
 from rest_framework import (
-        viewsets, generics, permissions, filters, exceptions, status,
+        viewsets, generics, permissions, filters, exceptions, status, views,
 )
 from .permissions import (
     IsOwnerOrReadOnly, IsGroupCreatorOrReadOnly, IsGroupCreator,
@@ -218,3 +219,17 @@ class GroupChatViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         group_set = self.request.user.kehubu_profile.group_set
         return GroupChat.objects.filter(group__in=group_set)
+
+
+class WxConfigAPIView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = WxConfigSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            wxconfig = serializer.save()
+            return Response(wxconfig)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)

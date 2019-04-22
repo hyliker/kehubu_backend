@@ -17,4 +17,5 @@ urlpatterns = router.urls
 urlpatterns += [
     path('joingroup/', views.JoinGroupView.as_view(), name='JoinGroup'),
     path('activity/', views.ActivityListView.as_view(), name='activie-list'),
+    path('wxconfig/', views.WxConfigAPIView.as_view(), name='wx-config'),
 ]
