@@ -24,6 +24,7 @@ gunicorn = "*"
 twisted = {extras = ["http2", "tls"],version = "*"}
 django-mptt = "*"
 python-magic = "*"
+wechatpy = {extras = ["cryptography"],version = "*"}
 
 [requires]
 python_version = "3.6"
