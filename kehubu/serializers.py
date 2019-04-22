@@ -285,6 +285,6 @@ class WxConfigSerializer(serializers.Serializer):
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
         else:
-            signature = wxclient.jsapi.get_jsapi_signature(noncestr, ticket, timestamp, url)
+            signature = wxclient.jsapi.get_jsapi_signature(nonceStr, ticket, timestamp, url)
         return dict(url=url, nonceStr=nonceStr, ticket=ticket, timestamp=timestamp, 
                     signature=signature, appid=wxclient.appid)
