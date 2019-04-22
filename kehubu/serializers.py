@@ -281,10 +281,10 @@ class WxConfigSerializer(serializers.Serializer):
         timestamp =  int(time.time())
         wxclient = get_wechat_client(request)
         try:
-            ticket = wxclient.jsapi.get_ticket()
+            ticket = wxclient.jsapi.get_jsapi_ticket()
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
         else:
             signature = wxclient.jsapi.get_jsapi_signature(nonceStr, ticket, timestamp, url)
-        return dict(url=url, nonceStr=nonceStr, ticket=ticket, timestamp=timestamp, 
+        return dict(url=url, nonceStr=nonceStr, ticket=ticket, timestamp=timestamp,
                     signature=signature, appid=wxclient.appid)
