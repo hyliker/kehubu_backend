@@ -49,8 +49,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     def join(self, request, pk=None):
         if not request.user.is_authenticated:
             weixin_login_url = reverse("weixin_login")
-            group_join_url = reverse("group-join", kwargs=dict(pk=pk))
-            redirect_url = "{}?process=login&next={}".format(weixin_login_url, group_join_url)
+            redirect_url = "{}?process=login&next={}".format(weixin_login_url, request.get_full_path())
             return HttpResponseRedirect(redirect_url)
 
         group = self.get_object()
