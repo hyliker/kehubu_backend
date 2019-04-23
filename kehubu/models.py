@@ -96,6 +96,16 @@ class Profile(models.Model):
     def group_users(self):
         return User.objects.filter(pk__in=self.group_user_ids)
 
+    @property
+    def channel_name(self):
+        return "kehubu.profile.{}".format(self.pk)
+
+    def message_channel(self, message):
+        try:
+            async_to_sync(channel_layer.group_send)(self.channel_name, message)
+        except Exception as exc:
+            print(exc)
+
 
 class GroupQuerySet(models.QuerySet):
     def filter_member_user(self, user):

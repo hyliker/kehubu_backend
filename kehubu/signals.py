@@ -4,9 +4,9 @@ from django.db.models import signals
 from allauth.socialaccount.signals import (
     social_account_added, social_account_updated
 )
-from .models import Member, Group, Profile, GroupChat
+from .models import Member, Group, Profile, GroupChat, UserChat
 from django.conf import settings
-from .serializers import MemberSerializer, GroupChatSerializer
+from .serializers import MemberSerializer, GroupChatSerializer, UserChatSerializer
 from actstream import action
 from actstream.actions import follow, unfollow
 
@@ -68,3 +68,18 @@ def group_chat_post_save(sender, instance, created, **kwargs):
         group.message_channel(dict(type='kehubu.groupchat.add', groupchat=serializer.data))
     else:
         group.message_channel(dict(type='kehubu.groupchat.update', groupchat=serializer.data))
+
+
+@receiver(signals.post_save, sender=UserChat)
+def user_chat_post_save(sender, instance, created, **kwargs):
+    serializer = UserChatSerializer(instance)
+    if created:
+        instance.sender.kehubu_profile.message_channel(
+            dict(type='kehubu.userchat.add', userchat=serializer.data))
+        instance.receiver.kehubu_profile.message_channel(
+            dict(type='kehubu.userchat.add', userchat=serializer.data))
+    else:
+        instance.sender.kehubu_profile.message_channel(
+            dict(type='kehubu.userchat.update', userchat=serializer.data))
+        instance.receiver.kehubu_profile.message_channel(
+            dict(type='kehubu.userchat.update', userchat=serializer.data))

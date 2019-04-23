@@ -304,5 +304,6 @@ class UserChatSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         data = super().to_representation(obj)
-        data['sender'] = obj.sender_id
+        data['receiver'] = UserSerializer(obj.receiver).data
+        data['sender'] = UserSerializer(obj.sender).data
         return data
