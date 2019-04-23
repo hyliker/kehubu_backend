@@ -6,10 +6,11 @@ from .serializers import (
     MemberInviterSerializer, MemberUserSerializer, GroupMemberRankSerializer,
     GroupInvitationSerializer, ActionSerializer, GroupAlbumSerializer,
     GroupAlbumImageSerializer, GroupChatSerializer, WxConfigSerializer,
+    UserChatSerializer,
 )
 from .models import (
     Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
-    GroupAlbumImage, GroupChat,
+    GroupAlbumImage, GroupChat, UserChat,
 )
 from rest_framework import (
         viewsets, generics, permissions, filters, exceptions, status, views,
@@ -232,3 +233,25 @@ class WxConfigAPIView(views.APIView):
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserChatViewSet(viewsets.ModelViewSet):
+    serializer_class = UserChatSerializer
+    queryset = UserChat.objects.all()
+    permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticated]
+    owner_field = "sender"
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    filterset_fields = ('receiver', 'sender')
+    ordering_fields = ('id', 'created', 'modified')
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = UserChat.objects.filter(Q(sender=user) | Q(receiver=user))
+        chat_user = self.request.query_params.get('chat_user', None)
+        if chat_user:
+            try:
+                chat_user = int(chat_user)
+            except ValueError:
+                raise exceptions.APIException("Invalid chat_user param")
+            qs = qs.filter(Q(sender=chat_user) | Q(receiver=chat_user))
+        return qs

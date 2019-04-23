@@ -2,7 +2,7 @@ import time
 from django.utils.crypto import get_random_string
 from .models import (
     Group, Profile, Member, GroupMemberRank, GroupInvitation, GroupAlbum,
-    GroupAlbumImage, GroupChat,
+    GroupAlbumImage, GroupChat, UserChat,
 )
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -288,3 +288,21 @@ class WxConfigSerializer(serializers.Serializer):
             signature = wxclient.jsapi.get_jsapi_signature(nonceStr, ticket, timestamp, url)
         return dict(url=url, nonceStr=nonceStr, ticket=ticket, timestamp=timestamp,
                     signature=signature, appid=wxclient.appid)
+
+
+class SameGroupUserPKField(serializers.PrimaryKeyRelatedField):
+    def get_queryset(self):
+        return self.context['request'].user.kehubu_profile.group_users
+
+
+class UserChatSerializer(serializers.ModelSerializer):
+    receiver = SameGroupUserPKField()
+    sender = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = UserChat
+        fields = "__all__"
+
+    def to_representation(self, obj):
+        data = super().to_representation(obj)
+        data['sender'] = obj.sender_id
+        return data
