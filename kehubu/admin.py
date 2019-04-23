@@ -71,3 +71,10 @@ class GroupChatAdmin(admin.ModelAdmin):
     list_display = ('group', 'user', 'message_summary', 'created', 'modified')
     list_filter = ('created', 'modified')
     search_fields = ('message', )
+
+
+@admin.register(models.UserChat)
+class UserChatAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'receiver', 'message_summary', 'created', 'modified')
+    list_filter = ('created', 'modified')
+    search_fields = ('message', )
