@@ -317,3 +317,18 @@ class GroupChat(TimeStampedModel):
     @property
     def message_summary(self):
         return self.message[:100]
+
+
+class UserChat(TimeStampedModel):
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                               related_name='sender_kehubu_userchat_set')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                 related_name='receiver_kehubu_userchat_set')
+    message = models.TextField()
+
+    def __str__(self):
+        return self.message_summary
+
+    @property
+    def message_summary(self):
+        return self.message[:100]
