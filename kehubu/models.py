@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import get_random_string
+from django.contrib.auth import get_user_model
 from model_utils.models import TimeStampedModel, TimeFramedModel
 from model_utils import Choices
 from taggit.managers import TaggableManager
@@ -22,6 +23,7 @@ from imagekit.models import ImageSpecField
 
 
 channel_layer = get_channel_layer()
+User = get_user_model()
 
 class Profile(models.Model):
     GENDER = Choices(('m', 'male', _('male')), ('f', 'female', _('female')), ('u', 'unknown', _('unknown')))
@@ -84,6 +86,15 @@ class Profile(models.Model):
     @property
     def group_set(self):
         return Group.objects.filter(pk__in=self.group_ids)
+
+    @property
+    def group_user_ids(self):
+        member_set = Member.objects.filter(group__in=self.group_ids)
+        return list(member_set.values_list("user", flat=True))
+
+    @property
+    def group_users(self):
+        return User.objects.filter(pk__in=self.group_user_ids)
 
 
 class GroupQuerySet(models.QuerySet):
