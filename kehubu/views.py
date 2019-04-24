@@ -68,6 +68,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class JoinGroupView(generics.CreateAPIView):
     serializer_class = JoinGroupSerializer
     queryset = Member.objects.all()
@@ -79,12 +80,20 @@ class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     permission_classes = [IsOwnerOrReadOnly]
     owner_field = "user"
+    filterset_fields = ('user', 'nickname', )
+    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    ordering_fields = ('id', 'nickname', 'birthdate', 'created', 'modified')
+    search_fields = ('nickname', 'user__username', 'user__first_name', 'user__last_name')
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated])
     def me(self, request):
         user = request.user
         serializer = self.get_serializer(user.kehubu_profile)
         return Response(serializer.data)
+
+    def get_queryset(self):
+        group_user_ids = self.request.user.kehubu_profile.group_user_ids
+        return Profile.objects.filter(user__in=group_user_ids)
 
 
 class MemberViewSet(viewsets.ModelViewSet):

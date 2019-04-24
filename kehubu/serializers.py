@@ -60,16 +60,18 @@ class ProfileOnlySerializer(serializers.ModelSerializer):
 
 
 class UserOnlySerializer(serializers.ModelSerializer):
+    full_name = serializers.ReadOnlyField(source='get_full_name')
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined', 'full_name')
 
 
 class UserSerializer(serializers.ModelSerializer):
     kehubu_profile = ProfileOnlySerializer(read_only=True)
+    full_name = serializers.ReadOnlyField(source='get_full_name')
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined', 'kehubu_profile')
+        fields = ('id', 'username', 'full_name', 'first_name', 'last_name', 'email', 'is_active', 'date_joined', 'kehubu_profile')
 
 
 class GroupSerializer(serializers.ModelSerializer):
