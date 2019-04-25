@@ -1,5 +1,7 @@
 # coding: utf-8
 from django.db import models
+from django.db.models import Sum, Count, Value
+from django.db.models.functions import Coalesce
 from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
@@ -188,6 +190,16 @@ class Group(TimeStampedModel):
     def album_count(self):
         return self.groupalbum_set.count()
 
+    @property
+    def forum_stats(self):
+        from forum.models import Topic
+        category_set = self.forum_category_set.all()
+        topic_set = Topic.objects.filter(category__in=category_set)
+        ret = topic_set.aggregate(
+            post_count=Coalesce(Sum('post_count'), Value(0)),
+            topic_count=Coalesce(Count('id'), Value(0))
+        )
+        return ret
 
 
 def make_invitation_code():

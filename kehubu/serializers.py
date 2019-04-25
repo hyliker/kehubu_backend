@@ -77,6 +77,7 @@ class UserSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     creator = UserSerializer(read_only=True)
     album_count = serializers.ReadOnlyField()
+    forum_stats = serializers.ReadOnlyField()
 
     class Meta:
         model = Group
