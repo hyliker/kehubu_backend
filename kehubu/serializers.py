@@ -106,10 +106,16 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
 
 
+class GroupMemberRankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupMemberRank
+        fields = "__all__"
+
 
 class MemberSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     inviter = UserSerializer(read_only=True)
+    rank = GroupMemberRankSerializer(read_only=True)
     class Meta:
         model = Member
         fields = "__all__"
@@ -175,10 +181,6 @@ class MemberInviterSerializer(serializers.ModelSerializer):
         read_only_fields = ['group']
 
 
-class GroupMemberRankSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GroupMemberRank
-        fields = "__all__"
 
 
 class GroupPKField(serializers.PrimaryKeyRelatedField):
