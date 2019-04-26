@@ -115,10 +115,15 @@ class GroupMemberRankSerializer(serializers.ModelSerializer):
 class MemberSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     inviter = UserSerializer(read_only=True)
-    rank = GroupMemberRankSerializer(read_only=True)
     class Meta:
         model = Member
         fields = "__all__"
+
+    def to_representation(self, obj):
+        data = super().to_representation(obj)
+        data['rank'] = GroupMemberRankSerializer(obj.rank).data
+        return data
+
 
 class JoinGroupSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())

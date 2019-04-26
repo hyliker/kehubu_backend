@@ -110,6 +110,11 @@ class MemberViewSet(viewsets.ModelViewSet):
         group_set = user_member_set.values_list("group", flat=True)
         return Member.objects.filter(group__in=group_set)
 
+    def perform_destroy(self, instance):
+        if instance.user == self.request.user:
+            raise exceptions.APIException('Not allow to delete this item')
+        instance.delete()
+
 
 class MemberInviterViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MemberInviterSerializer
